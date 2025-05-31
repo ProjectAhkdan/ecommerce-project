@@ -1,19 +1,30 @@
 #!/bin/sh
 . "$(dirname "$0")/_/husky.sh"
 
-# Jalankan lint-staged untuk validasi kode
+echo "🚀 Starting pre-commit checks..."
+
+echo "🔍 Running lint-staged..."
 if ! npx lint-staged; then
-  echo 'Linting failed. Please fix the issues and try again.'
+  echo "❌ Linting/formatting failed. Please fix the issues before commit."
   exit 1
 fi
 
-# Jalankan build untuk memastikan kode tidak rusak
+echo "🏗️ Running build to verify the project integrity..."
 if ! npm run build; then
-  echo 'Build failed. Please fix the errors above and try again.'
+  echo "❌ Build failed. Please fix the errors above before commit."
   exit 1
 fi
 
-# Jika semua berhasil
-echo 'All checks passed. Proceeding with commit...'
+if npm run | grep -q "test"; then
+  echo "🧪 Running tests..."
+  if ! npm test -- --watchAll=false; then
+    echo "❌ Tests failed. Please fix the failing tests before commit."
+    exit 1
+  fi
+else
+  echo "ℹ️ No test script found. Skipping tests."
+fi
+
+echo "✅ All pre-commit checks passed. Proceeding with commit..."
 
 exit 0
