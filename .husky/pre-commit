@@ -1,40 +1,38 @@
 #!/bin/sh
 . "$(dirname "$0")/_/husky.sh"
 
-# Warna terminal (jika didukung)
 RED='\033[0;31m'
 GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
 CYAN='\033[0;36m'
 RESET='\033[0m'
 
-echo "${CYAN}🚀 Starting pre-commit checks...${RESET}"
+echo "${CYAN}🚀 Cek-cek sebelum commit dimulai...${RESET}"
 
-# Step 1: Lint-staged
-echo "${YELLOW}🔍 Running lint-staged...${RESET}"
+# Cek lint-staged
+echo "${YELLOW}🔍 Lagi ngecek lint & format...${RESET}"
 if ! npx lint-staged; then
-  echo "${RED}❌ Linting/formatting failed. Please fix the issues before committing.${RESET}"
+  echo "${RED}❌ Waduh, ada yang belum rapi tuh. Benerin dulu ya!${RESET}"
   exit 1
 fi
 
-# Step 2: Build project
-echo "${YELLOW}🏗️  Verifying project builds successfully...${RESET}"
+# Coba build dulu
+echo "${YELLOW}🏗️  Build dulu bentar...${RESET}"
 if ! npm run build; then
-  echo "${RED}❌ Build failed. Please fix the errors before committing.${RESET}"
+  echo "${RED}❌ Build-nya ngambek. Coba dicek error-nya di atas ya!${RESET}"
   exit 1
 fi
 
-# Step 3: Run tests (if test script exists)
+# Kalo ada test, jalanin juga
 if npm run | grep -q "^ *test"; then
-  echo "${YELLOW}🧪 Running tests...${RESET}"
+  echo "${YELLOW}🧪 Tes dikit dulu bro...${RESET}"
   if ! npm test -- --watchAll=false; then
-    echo "${RED}❌ Some tests failed. Please fix them before committing.${RESET}"
+    echo "${RED}❌ Tes-nya gagal cuy. Fix dulu baru commit lagi.${RESET}"
     exit 1
   fi
 else
-  echo "${CYAN}ℹ️ No test script found. Skipping tests.${RESET}"
+  echo "${CYAN}ℹ️ Gak nemu script test, skip aja ya...${RESET}"
 fi
 
-# Final message
-echo "${GREEN}✅ All checks passed. Proceeding with commit...${RESET}"
+echo "${GREEN}✅ Mantap! Semua aman. Lanjut commit!${RESET}"
 exit 0
