@@ -9,21 +9,18 @@ RESET='\033[0m'
 
 echo "${CYAN}🚀 Cek-cek sebelum commit dimulai...${RESET}"
 
-# Cek lint-staged
 echo "${YELLOW}🔍 Lagi ngecek lint & format...${RESET}"
 if ! npx lint-staged; then
   echo "${RED}❌ Waduh, ada yang belum rapi tuh. Benerin dulu ya!${RESET}"
   exit 1
 fi
 
-# Coba build dulu
 echo "${YELLOW}🏗️  Build dulu bentar...${RESET}"
 if ! npm run build; then
   echo "${RED}❌ Build-nya ngambek. Coba dicek error-nya di atas ya!${RESET}"
   exit 1
 fi
 
-# Kalo ada test, jalanin juga
 if npm run | grep -q "^ *test"; then
   echo "${YELLOW}🧪 Tes dikit dulu bro...${RESET}"
   if ! npm test -- --watchAll=false; then
